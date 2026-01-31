@@ -1,0 +1,52 @@
+services:
+  # Redisクラスターノード1
+  redis-cluster-node-1:
+    image: redis:8.4-bookworm
+    container_name: redis-cluster-node-1
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly no
+    ports:
+      - "17001:6379"
+    networks:
+      - redis-network
+
+  # Redisクラスターノード2
+  redis-cluster-node-2:
+    image: redis:8.4-bookworm
+    container_name: redis-cluster-node-2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly no
+    ports:
+      - "17002:6379"
+    networks:
+      - redis-network
+
+  # Redisクラスターノード3
+  redis-cluster-node-3:
+    image: redis:8.4-bookworm
+    container_name: redis-cluster-node-3
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly no
+    ports:
+      - "17003:6379"
+    networks:
+      - redis-network
+
+  # クラスタ初期化用コンテナ
+  redis-cluster-init:
+    image: redis:8.4-bookworm
+    depends_on:
+      - redis-cluster-node-1
+      - redis-cluster-node-2
+      - redis-cluster-node-3
+    # クラスタ作成コマンドを実行
+    command: >
+      sh -c "sleep 5 &&
+      echo 'yes' | redis-cli --cluster create 
+      redis-cluster-node-1:6379
+      redis-cluster-node-2:6379 
+      redis-cluster-node-3:6379 
+      --cluster-replicas 0"
+    networks:
+      - redis-network
+
+networks:
+  redis-network:
+    name: redis-network
