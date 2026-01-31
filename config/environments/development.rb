@@ -26,7 +26,15 @@ Rails.application.configure do
   end
 
   # Change to :null_store to avoid any caching.
-  config.cache_store = :memory_store
+  config.cache_store = :redis_cache_store, {
+    redis: Redis::Cluster.new(nodes: %w[
+      redis://redis-cluster-node-1:6379
+      redis://redis-cluster-node-2:6379
+      redis://redis-cluster-node-3:6379
+    ]),
+    namespace: "app_cache",
+    expires_in: 1.minutes,
+  }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
