@@ -10,3 +10,5 @@
 - Redis 8.4 Cluster
 
 ## Related Blog (Written in Japanese)
+
+- [Rails8.1系で、Redisクラスターをセッションストアとキャッシュストアに設定してみた - メモ的な思考的な](https://thinkami.hatenablog.com/entry/2026/02/01/113738)
